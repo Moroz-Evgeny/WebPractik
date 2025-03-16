@@ -12,6 +12,18 @@ services:
       - "5432:5432"
     networks:
       - custom
+  WebPractik:
+    container_name: WebPractik
+    image: WebPractik
+    environment:
+      REAL_DATABASE_URL: "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - custom
 networks:
   custom:
     driver: bridge
