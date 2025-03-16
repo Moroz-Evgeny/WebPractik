@@ -20,7 +20,7 @@ class UserDAL:
       ) -> User:
     invite_id = str(uuid.uuid4())[:8]
     if roles[0] == PortalRole.ROLE_PORTAL_TEAMLID:
-      invite_id = None
+      invite_id = "None"
     new_user = User(
       name=name,
       surname=surname,
