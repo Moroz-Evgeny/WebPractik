@@ -17,12 +17,16 @@ class UserDAL:
       hashed_password: str,
       roles: list[PortalRole],
       ) -> User:
+    invite_id = str(uuid.uuid4())[:8]
+    if roles[0] == PortalRole.ROLE_PORTAL_TEANLID:
+      invite_id = None
     new_user = User(
       name=name,
       surname=surname,
       email=email,
       hashed_password=hashed_password,
       roles=roles,
+      invite_id=invite_id,
     )
     self.db_session.add(new_user)
     await self.db_session.flush()
