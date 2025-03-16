@@ -1,23 +1,28 @@
-ARG BASE_IMAGE=python:3.9-slim-buster
+ARG BASE_IMAGE=python:3.10.11
 FROM $BASE_IMAGE
 
-# system update & package install
-RUN apt-get -y update && \
+# Установка системных зависимостей
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
+    libpq-dev \
     openssl libssl-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
+# Создание рабочей директории
+WORKDIR /app
+
+# Копирование зависимостей и установка
+COPY requirements.txt .
+RUN python3 -m pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Копирование всего проекта
 COPY . .
-WORKDIR .
 
-# pip & poetry
-RUN python3 -m pip install --user --upgrade pip && \
-    python3 -m pip install -r requirements.txt
-
-# Configration
+# Открытие порта
 EXPOSE 8000
 
-# Execute
-CMD ["python", "main.py"]
+# Запуск приложения
+CMD ["python3", "main.py"]
