@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     networks:
       - custom
-  WebPractik:
+  webpractik:
     container_name: WebPractik
     image: WebPractik
     environment:
