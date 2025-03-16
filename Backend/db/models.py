@@ -19,6 +19,7 @@ class User(Base):
   is_active = Column(Boolean(), default=True)
   hashed_password = Column(String, nullable=False)
   roles = Column(ARRAY(String), nullable=False)
+  invite_id = Column(String, nullable=False)
 
 
 class PortalRole(str, Enum):

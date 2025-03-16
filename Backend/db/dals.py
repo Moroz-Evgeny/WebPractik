@@ -4,6 +4,7 @@ from sqlalchemy import select, update, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.models import PortalRole, User
 
+import uuid
 
 class UserDAL:
   def __init__(self, db_session: AsyncSession):
@@ -18,7 +19,7 @@ class UserDAL:
       roles: list[PortalRole],
       ) -> User:
     invite_id = str(uuid.uuid4())[:8]
-    if roles[0] == PortalRole.ROLE_PORTAL_TEANLID:
+    if roles[0] == PortalRole.ROLE_PORTAL_TEAMLID:
       invite_id = None
     new_user = User(
       name=name,
