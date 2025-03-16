@@ -13,8 +13,8 @@ services:
     networks:
       - custom
   webpractik:
-    container_name: WebPractik
-    image: WebPractik
+    container_name: webpractik
+    image: webpractik
     environment:
       REAL_DATABASE_URL: "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
     build:
