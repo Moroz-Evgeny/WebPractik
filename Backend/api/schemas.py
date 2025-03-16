@@ -35,6 +35,7 @@ class UserCreate(BaseModel):
     surname: str
     email: EmailStr
     password: str
+    role: str
 
     @field_validator("name")
     def validate_name(cls, value):
