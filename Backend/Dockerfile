@@ -1,22 +1,30 @@
 ARG BASE_IMAGE=python:3.10.0
 FROM $BASE_IMAGE
 
-# system update & package install
+# Настройка переменных окружения для PIP
+ENV PIP_DEFAULT_TIMEOUT=100 \
+    PIP_INDEX_URL=https://mirror.yandex.ru/pypi/simple/ \
+    PIP_TRUSTED_HOST=mirror.yandex.ru
+
+# Системные зависимости и зеркало для APT
 RUN sed -i 's|http://deb.debian.org|http://mirror.yandex.ru|g' /etc/apt/sources.list && \
     apt-get -y update && \
     apt-get install -y --no-install-recommends \
         build-essential \
         postgresql-client \
         openssl \
-        libssl-dev && \
+        libssl-dev \
+        curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Копирование проекта
 COPY . .
 WORKDIR .
 
-# pip & requirements
-RUN python3 -m pip install --user --upgrade pip && \
-    python3 -m pip install -r requirements.txt
+# Установка Python-зависимостей через зеркало
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install --no-cache-dir -r requirements.txt
 
-# Execute
+# Запуск приложения
 CMD ["python", "main.py"]
