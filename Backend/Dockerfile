@@ -18,8 +18,7 @@ COPY deps /deps
 COPY . .
 
 # Устанавливаем зависимости без интернета
-RUN python -m pip install --upgrade pip && \
-    python -m pip install --no-index --find-links=/deps -r requirements.txt
+RUN python -m pip install --no-index --find-links=/deps -r requirements.txt
 
 # Запуск приложения
 CMD ["python", "main.py"]
