@@ -1,28 +1,22 @@
-ARG BASE_IMAGE=python:3.10.11
+ARG BASE_IMAGE=python:3.10.0
 FROM $BASE_IMAGE
 
-# Установка системных зависимостей
-RUN apt-get update && \
+# system update & package install
+RUN apt-get -y update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
+    postgresql-client \
     openssl libssl-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Создание рабочей директории
-WORKDIR /app
-
-# Копирование зависимостей и установка
-COPY requirements.txt .
-RUN python3 -m pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# Копирование всего проекта
 COPY . .
+WORKDIR .
 
-# Открытие порта
-EXPOSE 8000
+# pip & requirements
+RUN python3 -m pip install --user --upgrade pip && \
+    python3 -m pip install -r requirements.txt
 
-# Запуск приложения
-CMD ["python3", "main.py"]
+# Execute
+CMD ["python", "main.py"]
