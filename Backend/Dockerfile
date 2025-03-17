@@ -15,9 +15,13 @@ RUN sed -i 's|http://deb.debian.org|http://mirror.yandex.ru|g' /etc/apt/sources.
 
 # Копирование проекта
 COPY . .
+
 WORKDIR .
 
-# Установка Python-зависимостей через зеркало
+# Зеркало PyPI (Tsinghua University)
+ENV PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+
+# Обновление pip и установка зависимостей через зеркало
 RUN python -m pip install --upgrade pip && \
     python -m pip install --no-cache-dir -r requirements.txt
 
