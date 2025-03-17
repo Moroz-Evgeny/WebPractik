@@ -1,8 +1,6 @@
 ARG BASE_IMAGE=python:3.10.0
 FROM $BASE_IMAGE
 
-# Настройка переменных окружения для PIP
-ENV PIP_DEFAULT_TIMEOUT=100 
 # Системные зависимости и зеркало для APT
 RUN sed -i 's|http://deb.debian.org|http://mirror.yandex.ru|g' /etc/apt/sources.list && \
     apt-get -y update && \
