@@ -18,8 +18,8 @@ COPY . .
 WORKDIR .
 
 # Установка Python-зависимостей через зеркало
-RUN python3 -m pip install --upgrade pip && \
-    python3 -m pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --upgrade pip && \
+    python -m pip install --no-cache-dir -r requirements.txt
 
 # Запуск приложения
 CMD ["python", "main.py"]
