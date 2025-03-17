@@ -20,5 +20,9 @@ COPY . .
 # Установка Python зависимостей только из локальной папки!
 RUN pip install --no-index --find-links=/deps /deps/*
 
+#Установка зависимостей из интернета
+# RUN python3 -m pip install --user --upgrade pip && \
+#     python3 -m pip install -r requirements.txt
+
 # Запуск приложения
 CMD ["python", "main.py"]
