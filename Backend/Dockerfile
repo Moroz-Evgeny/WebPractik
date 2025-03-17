@@ -1,8 +1,12 @@
 ARG BASE_IMAGE=python:3.10.11
 FROM $BASE_IMAGE
 
-# Установка системных зависимостей
-RUN apt-get update && \
+# Установка DNS Google для стабильного резолва доменов
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
+# Установка системных зависимостей с использованием другого зеркала
+RUN sed -i 's|http://deb.debian.org|http://ftp.de.debian.org|g' /etc/apt/sources.list && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
