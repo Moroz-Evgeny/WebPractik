@@ -19,7 +19,7 @@ COPY . .
 WORKDIR .
 
 # Зеркало PyPI (Tsinghua University)
-ENV PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/
+ENV PIP_INDEX_URL=https://pypi.douban.com/simple/
 
 # Обновление pip и установка зависимостей через зеркало
 RUN python -m pip install --upgrade pip && \
