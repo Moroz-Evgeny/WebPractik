@@ -18,7 +18,7 @@ COPY deps /deps
 COPY . .
 
 # Установка Python зависимостей только из локальной папки!
-RUN python -m pip install --no-index --find-links=/deps -r requirements.txt
+RUN pip install --no-index --find-links=/deps /deps/*
 
 # Запуск приложения
 CMD ["python", "main.py"]
