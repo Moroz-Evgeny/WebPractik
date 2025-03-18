@@ -13,16 +13,17 @@ RUN sed -i 's|http://deb.debian.org|http://mirror.yandex.ru|g' /etc/apt/sources.
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Копируем проект и зависимости
-COPY deps /deps
+# Копируем проект и зависимости(deps или requirements)
+# COPY deps /deps
 COPY . .
 
+WORKDIR .
 # Установка Python зависимостей только из локальной папки!
-RUN pip install --no-index --find-links=/deps /deps/*
+# RUN pip install --no-index --find-links=/deps /deps/*
 
 #Установка зависимостей из интернета
-# RUN python3 -m pip install --user --upgrade pip && \
-#     python3 -m pip install -r requirements.txt
+RUN python3 -m pip install --user --upgrade pip && \
+    python3 -m pip install -r requirements.txt
 
 # Запуск приложения
 CMD ["python", "main.py"]
