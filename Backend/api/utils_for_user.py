@@ -45,3 +45,4 @@ async def _get_user_by_id(id: UUID, session) -> Union[User, None]:
         user = await user_dal.get_user_by_id(id=id)
         if user is not None:
             return user
+

@@ -53,3 +53,10 @@ class UserDAL:
     user_row = result.fetchone()
     if user_row is not None:
       return user_row[0]
+  
+  async def get_user_by_email(self, email: str) -> Union[None, User]:
+    query = select(User).where(User.email == email)
+    result = await self.db_session.execute(query)
+    user_row = result.fetchone()
+    if user_row is not None:
+      return user_row[0]

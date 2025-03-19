@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas import ShowUser, UserCreate, UpdateUserRequest
-from api.utils import _create_new_user, _delete_user, _get_user_by_id, _update_user
+from api.utils_for_user import _create_new_user, _delete_user, _get_user_by_id, _update_user
 
 from db.session import get_db
 from db.dals import UserDAL
