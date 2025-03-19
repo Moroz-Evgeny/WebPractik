@@ -1,5 +1,7 @@
 from typing import Union
 from uuid import UUID
+
+from fastapi import HTTPException, status
 from api.schemas import UserCreate, ShowUser, UpdateUserRequest
 
 from db.dals import UserDAL
@@ -46,3 +48,14 @@ async def _get_user_by_id(id: UUID, session) -> Union[User, None]:
         if user is not None:
             return user
 
+async def _check_user_permissions(target_user: User, current_user: User) -> bool:
+    if PortalRole.ROLE_PORTAL_SUPERADMIN in target_user.roles and PortalRole.ROLE_PORTAL_USER in current_user.roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Superadmin cannot be deleted by the user."
+        )
+    if target_user.user_id != current_user.user_id:
+        if PortalRole.ROLE_PORTAL_SUPERADMIN not in current_user.roles:
+            return False
+        if PortalRole.ROLE_PORTAL_SUPERADMIN in target_user.roles and PortalRole.ROLE_PORTAL_SUPERADMIN in current_user.roles:
+            return False
+    return True

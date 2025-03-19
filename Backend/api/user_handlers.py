@@ -9,18 +9,21 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas import ShowUser, UserCreate, UpdateUserRequest
-from api.utils_for_user import _create_new_user, _delete_user, _get_user_by_id, _update_user
+from api.utils_for_user import _create_new_user, _delete_user, _get_user_by_id, _update_user, _check_user_permissions
+from api.utils_for_jwt import _get_current_user_from_token
 
 from db.session import get_db
 from db.dals import UserDAL
-from db.models import PortalRole
+from db.models import PortalRole, User
 
 user_router = APIRouter()
 logger = getLogger(__name__)
 
 
 @user_router.post("/", response_model=ShowUser)
-async def create_new_user(body: UserCreate, session: AsyncSession = Depends(get_db)) -> ShowUser:
+async def create_new_user(
+   body: UserCreate,
+   session: AsyncSession = Depends(get_db)) -> ShowUser:
   try:
       return await _create_new_user(body, session=session)
   except IntegrityError as err:
@@ -28,9 +31,17 @@ async def create_new_user(body: UserCreate, session: AsyncSession = Depends(get_
     raise HTTPException(status_code=503, detail=f"Database error: {err}")
   
 @user_router.delete("/", response_model = Union[UUID, None])
-async def delete_user_by_id(id: UUID, session: AsyncSession = Depends(get_db)) -> Union[UUID, None]:
+async def delete_user_by_id(
+   id: UUID,
+   session: AsyncSession = Depends(get_db),
+   current_user: User = Depends(_get_current_user_from_token)) -> Union[UUID, None]:
     #Проверка на наличие юзера в бд
     user_to_delete = await _get_user_by_id(id=id,session=session)
+    if await _check_user_permissions(
+       target_user=user_to_delete,
+       current_user=current_user
+    ) == False:
+       raise HTTPException(status_code=403, detail="Forbidden.")
     #Происходит удаление, если возвращается None, значит у пользователся флаг is_active = False
     delete_user_id = await _delete_user(id=id, session=session)
     if user_to_delete is None or delete_user_id is None:
