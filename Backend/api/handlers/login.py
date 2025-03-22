@@ -1,21 +1,12 @@
-import settings
-
 from create_jwt import create_access_token, create_refresh_token
 
-from datetime import timedelta
-
 from db.session import get_db
-from db.dals import UserDAL
 
-from api.utils_for_user import _get_user_by_id
-from api.utils_for_jwt import _authenticate_user
+from api.utils.jwt import _authenticate_user
 from api.schemas import Token
-
-from typing import Union
 
 from fastapi import APIRouter, Request, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,7 +22,7 @@ async def login_for_acess_token(
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Incorrect username or password")
   
   access_token = create_access_token(
-    data={"sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id, "team_id:": "..."}
+    data={"sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
   )
   refresh_token = create_refresh_token(
     data={"sub": str(user.user_id), "role": user.roles[0],}

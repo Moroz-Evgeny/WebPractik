@@ -9,8 +9,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas import ShowUser, UserCreate, UpdateUserRequest
-from api.utils_for_user import _create_new_user, _delete_user, _get_user_by_id, _update_user, _check_user_permissions
-from api.utils_for_jwt import _get_current_user_from_token
+from api.utils.user import _create_new_user, _delete_user, _get_user_by_id, _update_user, _check_user_permissions
+from api.utils.jwt import _get_current_user_from_token
 
 from db.session import get_db
 from db.dals import UserDAL
@@ -49,12 +49,21 @@ async def delete_user_by_id(
     return delete_user_id
 
 @user_router.patch("/", response_model = Union[UUID, None])
-async def update_user_by_id(id: UUID, body: UpdateUserRequest, session: AsyncSession = Depends(get_db)) -> Union[UUID, None]:
+async def update_user_by_id(
+   id: UUID,
+   body: UpdateUserRequest,
+   session: AsyncSession = Depends(get_db),
+   current_user: User = Depends(_get_current_user_from_token)) -> Union[UUID, None]:
 
    update_user_params = body.dict(exclude_none=True)
    if update_user_params == {}:
       raise HTTPException(status_code=422, detail="At least one parameter for user update info should be provided")
    user_to_update = await _get_user_by_id(id=id, session=session)
+   if await _check_user_permissions(
+      target_user=user_to_update,
+      current_user=current_user
+   ) == False:
+      raise HTTPException(status_code=403, detail="Forbidden.")   
    update_user_id = await _update_user(id=id, update_user_params=update_user_params, session=session)
    if user_to_update is None or update_user_id is None:
       raise HTTPException(status_code=404, detail=f"User with id '{id}' is not found") 

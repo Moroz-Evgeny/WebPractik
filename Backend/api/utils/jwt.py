@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from jose import jwt
 
-from api.utils_for_user import _get_user_by_id
+from api.utils.user import _get_user_by_id
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 

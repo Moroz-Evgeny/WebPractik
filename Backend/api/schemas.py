@@ -29,7 +29,6 @@ class UpdateUserRequest(BaseModel):
     surname: str | None = None
     email: EmailStr | None = None
 
-
 class UserCreate(BaseModel):
     name: str
     surname: str
@@ -49,6 +48,20 @@ class UserCreate(BaseModel):
             raise HTTPException(status_code=422, detail="Surname incorrect")
         return value
 
+class TaskCreate(BaseModel):
+    title: str
+    description: str
+    status: str = 'backlog'
+    responsible: str
+
+class UpdateTaskRequest(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    status: str | None = None
+    responsible: str | None = None
+
+class AddUserInTeam(BaseModel):
+    ...
 
 class Token(BaseModel):
     access_token: str
