@@ -1,9 +1,10 @@
+import LogForm from './components/pages/LogForm'
 import RegForm from './components/pages/RegForm'
 
 function App() {
 	return (
 		<div className='App'>
-			<RegForm />
+			<LogForm/>
 		</div>
 	)
 }
