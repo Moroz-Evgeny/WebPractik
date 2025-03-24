@@ -15,14 +15,17 @@ LETTER_MATCH_PATTERN = re.compile(r"^[а-яА-Яa-zA-Z\-]+$")
 class TunedModel(BaseModel):
     class Config:
         from_attributes = True
+        exclude_none = True
 
 
 class ShowUser(TunedModel):
-    user_id: uuid.UUID
+    user_id: uuid.UUID | None = None
     name: str
     surname: str
-    email: EmailStr
-    is_active: bool
+    email: EmailStr | None = None
+    role: str
+    is_active: bool | None = None
+    invite_id: str | None = None
 
 class UpdateUserRequest(BaseModel):
     name: str | None = None

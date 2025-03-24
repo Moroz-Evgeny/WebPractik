@@ -24,7 +24,9 @@ async def _create_new_user(body: UserCreate, session) -> ShowUser:
             name=user.name,
             surname=user.surname,
             email=user.email,
+            role=user.roles[0],
             is_active=user.is_active,
+            invite_id=user.invite_id,
         )
 
 async def _delete_user(id: UUID, session) -> Union[UUID, None]:

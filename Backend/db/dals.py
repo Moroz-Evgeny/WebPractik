@@ -76,14 +76,24 @@ class UserDAL:
     user_row = result.fetchone()
     if user_row is not None:
       return user_row[0]
-  
+
+
+class TeamDAL:
+  def __init__(self, db_session: AsyncSession):
+    self.db_session = db_session 
+
   async def get_team_id_by_teamlid_id(self, id: UUID) -> Union[None, UUID]:
     query = select(Team).where(Team.teamlid_id == id)
     result = await self.db_session.execute(query)
     team_row = result.fetchone()
     if team_row is not None:
       return team_row[0].team_id
-  
+
+
+class TaskDAL:
+  def __init__(self, db_session: AsyncSession):
+    self.db_session = db_session
+
   async def create_new_task(
       self,
       team_id: str,

@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import Union
 from uuid import UUID
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request, Response, status
 from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
@@ -68,3 +68,17 @@ async def update_user_by_id(
    if user_to_update is None or update_user_id is None:
       raise HTTPException(status_code=404, detail=f"User with id '{id}' is not found") 
    return update_user_id
+
+@user_router.get('/', response_model=ShowUser, response_model_exclude_none=True)
+async def get_user_by_id(id: UUID, session: AsyncSession = Depends(get_db), current_user: User = Depends(_get_current_user_from_token)) -> Union[ShowUser, None]:
+   user = await _get_user_by_id(id=id, session=session)
+   if user is None:
+      raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id '{id}' is not found")
+   show_user = ShowUser(
+      name=user.name,
+      surname=user.surname,
+      email=user.email,
+      role=user.roles[0],
+      invite_id=user.invite_id,
+   )
+   return show_user
