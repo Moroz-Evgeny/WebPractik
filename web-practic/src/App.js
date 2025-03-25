@@ -5,7 +5,7 @@ import RegForm from './components/pages/RegForm'
 
 function App() {
 	return <div className='App'>
-		<LogForm/>
+		<RegForm/>
 	</div>
 }
 
