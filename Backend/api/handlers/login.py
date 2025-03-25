@@ -3,7 +3,7 @@ from create_jwt import create_access_token, create_refresh_token
 from db.session import get_db
 from db.models import User
 
-from api.utils.jwt import _authenticate_user, _get_current_user_from_token
+from api.utils.jwt import _authenticate_user, _get_current_user_from_refresh_token
 from api.schemas import Token
 
 from fastapi import APIRouter, Request, Response, Depends, HTTPException, status
@@ -25,10 +25,10 @@ async def login_for_acess_token(
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Incorrect username or password")
   
   access_token = create_access_token(
-    data={"sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
+    data={"type": "access","sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
   )
   refresh_token = create_refresh_token(
-    data={"sub": str(user.user_id), "role": user.roles[0],}
+    data={"type": "refresh","sub": str(user.user_id), "role": user.roles[0],}
   )
 
   response.set_cookie(
@@ -42,9 +42,33 @@ async def login_for_acess_token(
   return Token(access_token=access_token, token_type='bearer')
 
 @login_router.post("/refresh", response_model=Token)
-async def refresh_token(request: Request, user: User = Depends(_get_current_user_from_token)) -> Union[None, Token]:
-  access_token = create_access_token(
-  data={"sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
-  )
+async def refresh_token(request: Request, response: Response, session: AsyncSession = Depends(get_db)) -> Union[None, Token]:
+  try:
+    token = request.cookies.get("refresh_token")
+    print('-'*100)
+    print(token)
+    user = await _get_current_user_from_refresh_token(token=token, session=session)
+    print(user)
+    access_token = create_access_token(
+    data={"type": "access","sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
+    )
+    print(access_token)
+    refresh_token = create_refresh_token(
+      data={"type": "refresh","sub": str(user.user_id), "role": user.roles[0],}
+    )
+    print(refresh_token)
+    response.set_cookie(
+      key="refresh_token",
+      value=refresh_token,
+      httponly=True,  
+      # secure=True,              # Только HTTPS
+      samesite="strict", 
+      max_age=60 * 60 * 24 * 7
+    )
+  except:
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+    )
   return Token(access_token=access_token, token_type='bearer')
 

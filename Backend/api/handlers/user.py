@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas import ShowUser, UserCreate, UpdateUserRequest
 from api.utils.user import _create_new_user, _delete_user, _get_user_by_id, _update_user, _check_user_permissions
-from api.utils.jwt import _get_current_user_from_token
+from api.utils.jwt import _get_current_user_from_access_token
 
 from db.session import get_db
 from db.dals import UserDAL
@@ -34,7 +34,7 @@ async def create_new_user(
 async def delete_user_by_id(
    id: UUID,
    session: AsyncSession = Depends(get_db),
-   current_user: User = Depends(_get_current_user_from_token)) -> Union[UUID, None]:
+   current_user: User = Depends(_get_current_user_from_access_token)) -> Union[UUID, None]:
     #Проверка на наличие юзера в бд
     user_to_delete = await _get_user_by_id(id=id,session=session)
     if await _check_user_permissions(
@@ -53,7 +53,7 @@ async def update_user_by_id(
    id: UUID,
    body: UpdateUserRequest,
    session: AsyncSession = Depends(get_db),
-   current_user: User = Depends(_get_current_user_from_token)) -> Union[UUID, None]:
+   current_user: User = Depends(_get_current_user_from_access_token)) -> Union[UUID, None]:
 
    update_user_params = body.dict(exclude_none=True)
    if update_user_params == {}:
@@ -70,7 +70,7 @@ async def update_user_by_id(
    return update_user_id
 
 @user_router.get('/', response_model=ShowUser, response_model_exclude_none=True)
-async def get_user_by_id(id: UUID, session: AsyncSession = Depends(get_db), current_user: User = Depends(_get_current_user_from_token)) -> Union[ShowUser, None]:
+async def get_user_by_id(id: UUID, session: AsyncSession = Depends(get_db), current_user: User = Depends(_get_current_user_from_access_token)) -> Union[ShowUser, None]:
    user = await _get_user_by_id(id=id, session=session)
    if user is None:
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id '{id}' is not found")

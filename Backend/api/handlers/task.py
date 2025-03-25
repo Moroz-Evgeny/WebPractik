@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.schemas import TaskCreate
 
-from api.utils.jwt import _get_current_user_from_token
+from api.utils.jwt import _get_current_user_from_access_token
 from api.utils.task import _get_team_id_by_teamlid_id, _create_new_task
 
 from db.session import get_db
@@ -16,7 +16,7 @@ from db.models import PortalRole, User
 task_router = APIRouter()
 
 @task_router.post('/', response_model=Union[UUID, None])
-async def create_new_task(task: TaskCreate, user: User = Depends(_get_current_user_from_token), session: AsyncSession = Depends(get_db)):
+async def create_new_task(task: TaskCreate, user: User = Depends(_get_current_user_from_access_token), session: AsyncSession = Depends(get_db)):
   if user.roles[0] == PortalRole.ROLE_PORTAL_USER:
     raise HTTPException(status_code=403, detail="Forbidden.")
   team_id = await _get_team_id_by_teamlid_id(id=user.user_id, session=session)

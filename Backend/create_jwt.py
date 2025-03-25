@@ -11,7 +11,7 @@ def create_access_token(data: dict):
 
   to_encode.update({"exp": expire})
   encoded_iwt = jwt.encode(
-    to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    to_encode, settings.ACCESS_SECRET_KEY, algorithm=settings.ALGORITHM
   )
   return encoded_iwt
 
@@ -21,6 +21,6 @@ def create_refresh_token(data: dict):
 
   to_encode.update({"exp": expire})
   encoded_iwt = jwt.encode(
-    to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    to_encode, settings.REFRESH_SECRET_KEY, algorithm=settings.ALGORITHM
   )
   return encoded_iwt
