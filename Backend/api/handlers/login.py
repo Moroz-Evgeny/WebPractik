@@ -1,14 +1,17 @@
 from create_jwt import create_access_token, create_refresh_token
 
 from db.session import get_db
+from db.models import User
 
-from api.utils.jwt import _authenticate_user
+from api.utils.jwt import _authenticate_user, _get_current_user_from_token
 from api.schemas import Token
 
 from fastapi import APIRouter, Request, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from typing import Union
 
 login_router = APIRouter()
 
@@ -37,3 +40,11 @@ async def login_for_acess_token(
     max_age=60 * 60 * 24 * 7
   )
   return Token(access_token=access_token, token_type='bearer')
+
+@login_router.post("/refresh", response_model=Token)
+async def refresh_token(request: Request, user: User = Depends(_get_current_user_from_token)) -> Union[None, Token]:
+  access_token = create_access_token(
+  data={"sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
+  )
+  return Token(access_token=access_token, token_type='bearer')
+
