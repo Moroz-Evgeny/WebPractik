@@ -12,9 +12,11 @@ services:
       - "5432:5432"
     networks:
       - custom
-  WebPractik:
-    container_name: WebPractik
-    image: WebPractik # Specify the name of the Docker image to be built
+  webpractik:
+    container_name: webpractik
+    image: webpractik
+    depends_on: 
+      - db
     environment:
       REAL_DATABASE_URL: "postgresql+asyncpg://postgres:postgres@db:5432/postgres"
     build:
@@ -27,3 +29,4 @@ services:
 networks:
   custom:
     driver: bridge
+    

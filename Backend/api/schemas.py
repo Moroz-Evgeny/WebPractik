@@ -15,20 +15,22 @@ LETTER_MATCH_PATTERN = re.compile(r"^[а-яА-Яa-zA-Z\-]+$")
 class TunedModel(BaseModel):
     class Config:
         from_attributes = True
+        exclude_none = True
 
 
 class ShowUser(TunedModel):
-    user_id: uuid.UUID
+    user_id: uuid.UUID | None = None
     name: str
     surname: str
-    email: EmailStr
-    is_active: bool
+    email: EmailStr | None = None
+    role: str
+    is_active: bool | None = None
+    invite_id: str | None = None
 
 class UpdateUserRequest(BaseModel):
     name: str | None = None
     surname: str | None = None
     email: EmailStr | None = None
-
 
 class UserCreate(BaseModel):
     name: str
@@ -48,4 +50,22 @@ class UserCreate(BaseModel):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(status_code=422, detail="Surname incorrect")
         return value
-        
+
+class TaskCreate(BaseModel):
+    title: str
+    description: str
+    status: str = 'backlog'
+    responsible: str
+
+class UpdateTaskRequest(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    status: str | None = None
+    responsible: str | None = None
+
+class AddUserInTeam(BaseModel):
+    ...
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str 

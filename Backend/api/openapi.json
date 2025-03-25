@@ -4,6 +4,7 @@
 	"paths": {
 		"/user/": {
 			"post": {
+				"tags": ["user"],
 				"summary": "Create New User",
 				"operationId": "create_new_user_user__post",
 				"requestBody": {
@@ -34,8 +35,10 @@
 				}
 			},
 			"delete": {
+				"tags": ["user"],
 				"summary": "Delete User By Id",
 				"operationId": "delete_user_by_id_user__delete",
+				"security": [{ "OAuth2PasswordBearer": [] }],
 				"parameters": [
 					{
 						"name": "id",
@@ -70,6 +73,7 @@
 				}
 			},
 			"patch": {
+				"tags": ["user"],
 				"summary": "Update User By Id",
 				"operationId": "update_user_by_id_user__patch",
 				"parameters": [
@@ -113,10 +117,70 @@
 					}
 				}
 			}
+		},
+		"/login/": {
+			"post": {
+				"tags": ["login"],
+				"summary": "Login For Acess Token",
+				"operationId": "login_for_acess_token_login__post",
+				"requestBody": {
+					"content": {
+						"application/x-www-form-urlencoded": {
+							"schema": {
+								"$ref": "#/components/schemas/Body_login_for_acess_token_login__post"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/Token" }
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
 		"schemas": {
+			"Body_login_for_acess_token_login__post": {
+				"properties": {
+					"grant_type": {
+						"anyOf": [
+							{ "type": "string", "pattern": "^password$" },
+							{ "type": "null" }
+						],
+						"title": "Grant Type"
+					},
+					"username": { "type": "string", "title": "Username" },
+					"password": { "type": "string", "title": "Password" },
+					"scope": { "type": "string", "title": "Scope", "default": "" },
+					"client_id": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Client Id"
+					},
+					"client_secret": {
+						"anyOf": [{ "type": "string" }, { "type": "null" }],
+						"title": "Client Secret"
+					}
+				},
+				"type": "object",
+				"required": ["username", "password"],
+				"title": "Body_login_for_acess_token_login__post"
+			},
 			"HTTPValidationError": {
 				"properties": {
 					"detail": {
@@ -139,6 +203,15 @@
 				"type": "object",
 				"required": ["user_id", "name", "surname", "email", "is_active"],
 				"title": "ShowUser"
+			},
+			"Token": {
+				"properties": {
+					"access_token": { "type": "string", "title": "Access Token" },
+					"token_type": { "type": "string", "title": "Token Type" }
+				},
+				"type": "object",
+				"required": ["access_token", "token_type"],
+				"title": "Token"
 			},
 			"UpdateUserRequest": {
 				"properties": {
@@ -186,6 +259,12 @@
 				"type": "object",
 				"required": ["loc", "msg", "type"],
 				"title": "ValidationError"
+			}
+		},
+		"securitySchemes": {
+			"OAuth2PasswordBearer": {
+				"type": "oauth2",
+				"flows": { "password": { "scopes": {}, "tokenUrl": "/login" } }
 			}
 		}
 	}
