@@ -38,11 +38,10 @@ export default function LogForm() {
 		})
 			.then(response => response.json())
 			.then(result => {
-				console.log(result)
-					if (result.token) {
-						setToken(result.token)
-						localStorage.setItem('token', result.token) // Сохраняем в localStorage
-					}
+				if (result.token) {
+					localStorage.setItem('token', result.token)
+					setToken(result.token)
+				}
 				setData(result)
 			})
 			.catch(error => console.error('Ошибка запроса:', error))
