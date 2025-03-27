@@ -45,18 +45,13 @@ async def login_for_acess_token(
 async def refresh_token(request: Request, response: Response, session: AsyncSession = Depends(get_db)) -> Union[None, Token]:
   try:
     token = request.cookies.get("refresh_token")
-    print('-'*100)
-    print(token)
     user = await _get_current_user_from_refresh_token(token=token, session=session)
-    print(user)
     access_token = create_access_token(
     data={"type": "access","sub": str(user.user_id), "role": user.roles[0], "invite_id": user.invite_id}
     )
-    print(access_token)
     refresh_token = create_refresh_token(
       data={"type": "refresh","sub": str(user.user_id), "role": user.roles[0],}
     )
-    print(refresh_token)
     response.set_cookie(
       key="refresh_token",
       value=refresh_token,
