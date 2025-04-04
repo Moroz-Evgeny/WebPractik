@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 export default function RegForm() {
+	var email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 	const [nameForm, setNameForm] = useState('')
 	const [surnameForm, setSurnameForm] = useState('')
 	const [emailForm, setEmailForm] = useState('')
@@ -12,6 +13,9 @@ export default function RegForm() {
 	const [rank, setRank] = useState('')
 	const [btnStyle, setBtnStyle] = useState('btn disable')
 	const [data, setData] = useState({})
+	const [isNameValid, setIsNameValid] = useState(true)
+	const [isSurnameValid, setIsSurnameValid] = useState(true)
+	const [isEmailValid, setIsEmailValid] = useState(true)
 
 	useEffect(() => {
 		if (
@@ -27,6 +31,27 @@ export default function RegForm() {
 		} else {
 			setBtnStyle('btn')
 		}
+		if (/\d/.test(nameForm)) {
+			setIsNameValid(false)
+			setBtnStyle('btn disable')
+		} else {
+			setIsNameValid(true)
+		}
+
+		if (/\d/.test(surnameForm)) {
+			setIsSurnameValid(false)
+			setBtnStyle('btn disable')
+		} else {
+			setIsSurnameValid(true)
+		}
+
+		if (!email.test(emailForm) && emailForm !== '') {
+			setIsEmailValid(false)
+			setBtnStyle('btn disable')
+		} else if (emailForm !== '' || emailForm === '') {
+			setIsEmailValid(true)
+		}
+
 	}, [nameForm, surnameForm, emailForm, passwordForm, rank])
 
 	function handleNameInput(e) {
@@ -56,10 +81,10 @@ export default function RegForm() {
 			surname: surnameForm,
 			email: emailForm,
 			password: passwordForm,
-			rank: rank,
+			role: rank,
 		}
 
-		fetch('http://127.0.0.1:8000/user', {
+		fetch('http://37.9.4.131:8000/user', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -78,15 +103,45 @@ export default function RegForm() {
 		<form className='register_form' onSubmit={handleSubmit}>
 			<div className='form_input'>
 				<label htmlFor='input'>Имя</label>
-				<input type='text' onChange={handleNameInput} value={nameForm} />
+				<div className='input'>
+					<input
+						type='text'
+						onChange={handleNameInput}
+						value={nameForm}
+						placeholder='Введите имя'
+					/>
+					<label className='label' htmlFor='input'>
+						{isNameValid ? '' : 'Имя введено некорректно'}
+					</label>
+				</div>
 			</div>
 			<div className='form_input'>
 				<label htmlFor='input'>Фамилия</label>
-				<input type='text' onChange={handleSurNameInput} value={surnameForm} />
+				<div className='input'>
+					<input
+						type='text'
+						onChange={handleSurNameInput}
+						value={surnameForm}
+						placeholder='Введите фамилию'
+					/>
+					<label className='label' htmlFor='input'>
+						{isSurnameValid ? '' : 'Фамилия введена некорректно'}
+					</label>
+				</div>
 			</div>
 			<div className='form_input'>
 				<label htmlFor='input'>Почта</label>
-				<input type='text' onChange={handleEmailInput} value={emailForm} />
+				<div className='input'>
+					<input
+						type='text'
+						onChange={handleEmailInput}
+						value={emailForm}
+						placeholder='example@example.ru'
+					/>
+					<label className='label' htmlFor='input'>
+						{isEmailValid ? '' : 'Почта введена некорректно'}
+					</label>
+				</div>
 			</div>
 			<div className='form_input'>
 				<label htmlFor='input'>Пароль</label>
@@ -94,6 +149,7 @@ export default function RegForm() {
 					type='text'
 					onChange={handlePasswordInput}
 					value={passwordForm}
+					placeholder='Введите пароль'
 				/>
 			</div>
 			<div>
